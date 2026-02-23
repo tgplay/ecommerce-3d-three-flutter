@@ -1,46 +1,112 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
+  <head>
+    <base href="$FLUTTER_BASE_HREF">
+    <meta charset="UTF-8" />
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E-commerce 3D</title>
 
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
+    <style>
+      html, body { 
+        margin: 0; 
+        padding: 0; 
+        width: 100%; 
+        height: 100%; 
+        overflow: hidden;
+        background: #fff;
+      }
+      
+      /* Three.js OCULTO por padrão */
+      #three-host { 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 100%; 
+        z-index: -1;  /* IMPORTANTE: z-index negativo */
+        pointer-events: none;
+        visibility: hidden;
+      }
 
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+      /* Quando ativar a classe "three-active", mostrar */
+      #three-host.three-active {
+        z-index: 999999;
+        pointer-events: auto;
+        visibility: visible;
+      }
+      
+      canvas { 
+        display: block; 
+      }
 
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="$FLUTTER_BASE_HREF">
+      flt-glass-pane {
+        display: none !important;
+      }
 
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+      #debug {
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        background: rgba(0,0,0,0.9);
+        color: #0f0;
+        font-family: monospace;
+        font-size: 11px;
+        padding: 10px;
+        max-width: 350px;
+        z-index: 1000000;
+        overflow: auto;
+        max-height: 300px;
+        display: none;  /* Debug oculto por padrão */
+      }
 
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="ecommerce_3d_three_flutter">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+      #debug.debug-active {
+        display: block;
+      }
+    </style>
+  </head>
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+  <body>
+    <div id="three-host"></div>
+    <div id="debug"></div>
 
-  <title>ecommerce_3d_three_flutter</title>
-  <link rel="manifest" href="manifest.json">
-</head>
-<body>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
+    <script>
+      const debugLog = document.getElementById('debug');
+      window.debug = function(msg) {
+        console.log(msg);
+        debugLog.innerHTML += msg + '<br/>';
+      };
+      debug('[DEBUG] Iniciando...');
 
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
-  <script src="flutter_bootstrap.js" async></script>
-</body>
+      // Função para ativar/desativar o viewer 3D
+      window.toggle3DViewer = function(active) {
+        const host = document.getElementById('three-host');
+        const debug = document.getElementById('debug');
+        if (active) {
+          host.classList.add('three-active');
+          debug.classList.add('debug-active');
+        } else {
+          host.classList.remove('three-active');
+          debug.classList.remove('debug-active');
+        }
+      };
+    </script>
+
+    <!-- ImportMap para Three.js ESM -->
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/controls/OrbitControls.js": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js",
+        "three/addons/loaders/GLTFLoader.js": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js"
+      }
+    }
+    </script>
+
+    <!-- Three.js viewer como module script -->
+    <script type="module" src="three_viewer.js" async></script>
+
+    <!-- Flutter -->
+    <script src="flutter_bootstrap.js" async></script>
+  </body>
 </html>
